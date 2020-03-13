@@ -28,26 +28,39 @@ public class Server {
         @Override
         public void run() {
 
-            System.out.println("Thread handling " + connection);
+            System.out.println("Thread handling " + connection.toString());
 
             try {
                 BufferedReader connectionReader = new BufferedReader(new InputStreamReader(connection.getInputStream())); //Used to read the incoming information in the connection
                 PrintWriter connectionWriter = new PrintWriter(connection.getOutputStream(), true); //Used to write information back to the client
 
-                connectionWriter.println("Connection established\nWelcome to JavaMath!");
+                connectionWriter.println("Connection established! Welcome to JavaMath!");
 
-                String[] inputParameters = connectionReader.readLine().split(" ");
+                String incomingMessage = connectionReader.readLine();
 
+                while (incomingMessage != null){
+                    String[] inputParameters = incomingMessage.split(" ");
 
-                switch (mathOperations.valueOf(inputParameters[0])){
-                    case ADD:
-                        connectionWriter.println(Integer.parseInt(inputParameters[1]) + Integer.parseInt(inputParameters[2]));
-                        break;
-                    case SUBTRACT:
-                        connectionWriter.println(Integer.parseInt(inputParameters[1]) - Integer.parseInt(inputParameters[2]));
-                        break;
-                    default:
-                        connectionWriter.println("Invalid operation");
+                    int result = 0;
+
+                    switch (mathOperations.valueOf(inputParameters[0].toUpperCase())){
+                        case ADD:
+                            System.out.println("Addition");
+                            result = Integer.parseInt(inputParameters[1]) + Integer.parseInt(inputParameters[2]);
+                            System.out.println(result);
+                            connectionWriter.println(result);
+                            break;
+                        case SUBTRACT:
+                            System.out.println("Subtraction");
+                            result = Integer.parseInt(inputParameters[1]) - Integer.parseInt(inputParameters[2]);
+                            System.out.println(result);
+                            connectionWriter.println(result);
+                            break;
+                        default:
+                            connectionWriter.println("Invalid operation");
+                    }
+
+                    incomingMessage = connectionReader.readLine();
                 }
 
                 connection.close();
